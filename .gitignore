@@ -1,0 +1,9 @@
+# Credentials
+.env
+
+# Python cache
+/__pycache__
+/cogs/__pycache__
+
+# Tests and test data
+/ignore
