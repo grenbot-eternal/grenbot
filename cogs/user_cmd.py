@@ -29,7 +29,8 @@ USER_COMMANDS = {
     "meg": ["oh my girl", "seunghee"],
     "freya": ["loona", "heejin"],
     "addem": ["twice", "sana"],
-    "mugi": ["kard", "bm"]
+    "mugi": ["kard", "bm"],
+    "davy": ["twice", "sana"]
 }
 
 TEST_USERS = {"booker": ["dreamcatcher", "Sua"],

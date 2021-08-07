@@ -34,10 +34,11 @@ RESPONSES = {
     "bunny": "https://streamable.com/tkrbz",
     "hanbin": "https://streamable.com/j9i3gg",
     "spicy": "https://streamable.com/2d5b35",
+    "dimples": "https://streamable.com/zc53qa"
 }
 
 
-RESPONSE_FILTER = ["nako", "hanbin", "pepsi3", "yoo", "bunny", "spicy"]
+RESPONSE_FILTER = ["nako", "hanbin", "pepsi3", "yoo", "bunny", "spicy", "dimples"]
 
 RESPONSE_FILTERED = {
     key: value for key, value in RESPONSES.items() if key in RESPONSE_FILTER

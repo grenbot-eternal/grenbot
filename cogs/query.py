@@ -5,10 +5,11 @@ import random
 
 import discord
 from discord.ext import commands
+from pathlib import Path
 
 from .constants import CHANNELS, PIC_DIR
 from .utils import filter_input, in_channel
-from pathlib import Path
+
 
 
 def group_name_from_path(path):
@@ -93,14 +94,23 @@ class QueryCog(commands.Cog):
             names = ", ".join(names)
             await ctx.send(
                 f"Multiple idols found: **{names}**."
-                "\nEnter the group without spaces:"
+                "\nReply with the group name:"
             )
             message_response = await self.bot.wait_for(
                 "message", check=lambda m: m.author == ctx.author
             )
-            await self.query_pics(
-                ctx, f"{message_response.content}-{idol}", num_pics
-            )
+            reply = message_response.content.replace(" ", "")
+
+            for dirs in output:
+                folder_name = group_name_from_path(dirs)
+                if reply in folder_name.replace(" ", ""):
+                    new_query = folder_name.split(" ")
+                    idol = new_query[-1]
+                    reply = "".join(new_query[:-1])
+                    break
+
+
+            await self.query_pics(ctx, f"{reply}-{idol}", num_pics)
             return
 
         await send_pics.async_send_pics(ctx, num_pics, output[0])

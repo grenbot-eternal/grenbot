@@ -74,11 +74,11 @@ class GfycatCog(commands.Cog):
     @in_channel(*CHANNELS)
     @commands.command(
         name="gfycat", aliases=["gfy",],
-        help=("Usage: !gfycat query. Uses gfycat API to return gifs."),
+        help=("Usage: g!fycat query. Uses gfycat API to return gifs."),
     )
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def gfy_search(self, ctx, *idol, num_pics=1):
-        blocked = ["feet", "foot", "olivia", "olivi"]
+        blocked = ["feet", "foot", "olivia", "olivi", "eunbig", "pit"]
         try:
             num_pics = int(idol[-1])
             idol = idol[:-1]
@@ -87,6 +87,9 @@ class GfycatCog(commands.Cog):
             
         if any(x.lower() in blocked for x in idol):
              return
+        if ctx.author.name.lower() == "addem":
+            if any("fap" in x.lower() for x in idol):
+                return
 
         idol = "+".join(idol)
         for key, item in EXCEPTIONS.items():
@@ -95,9 +98,6 @@ class GfycatCog(commands.Cog):
         api_request = GfycatSearch(idol, num_pics)
         images = api_request.api_to_image()
         await ctx.send("\n".join(images))
-
-
-
 
 def setup(bot):
     bot.add_cog(GfycatCog(bot))

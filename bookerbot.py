@@ -22,7 +22,6 @@ def main():
         "cogs.setup",
         "cogs.send_pics",
         "cogs.query",
-        "cogs.qwant",
         "cogs.birthday",
         "cogs.gfycat",
         "cogs.user_cmd",
