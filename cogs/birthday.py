@@ -75,10 +75,10 @@ BIRTHDAYS = {
     "1308": [["apink", "bomi"]],
     "1408": [["rocket punch", "Sohee"]],
     "1608": [["gugudan", "haebin"]],
-    "1808": [["apink", "eunji"]],
+    "1808": [["apink", "eunji"], ["loona", "haseul"]],
     "1908": [["wjsn", "bona"], ["gfriend", "yerin"]],
     "2208": [["Kard", "somin"]],
-    "2608": [["g-idle", "soyeon"]],
+    "2608": [["g-idle", "soyeon"], ["yezi"]],
     "2808": [["gugudan", "sejeong"]],
     "3008": [["caolu"]],
     "3108": [["wekimeki", "lucy"]],
@@ -174,7 +174,8 @@ class BirthdayCog(commands.Cog):
                 break
         output = key_ddmm.strftime("%d-%m-%Y")
         output = f"Next birthday is on **{output}** for **{', '.join(idols)}**"
-        await ctx.send(output)
+        async with ctx.typing():
+            await ctx.send(output)
 
 
 def setup(bot):

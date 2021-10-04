@@ -87,7 +87,8 @@ class SendPicsCog(commands.Cog):
         files = [discord.File(pic) for pic in pic_list.pics]
         print("Sending pics")
         try:
-            await ctx.send(files=files)
+            async with ctx.typing():
+                await ctx.send(files=files)
             return
         except discord.errors.HTTPException as e:
             pass
@@ -97,10 +98,12 @@ class SendPicsCog(commands.Cog):
             print(f"Uploading {len(chunks)} chunks.")
             for chunk in chunks:
                 files = [discord.File(pic) for pic in chunk]
-                await ctx.send(files=files)
+                async with ctx.typing():
+                    await ctx.send(files=files)
         except discord.errors.HTTPException as e:
             print(e, file=sys.stdout)
-            await ctx.send("Command failed due to file size. Try again.")
+            async with ctx.typing():
+                await ctx.send("Command failed due to file size. Try again.")
 
 
 def setup(bot):

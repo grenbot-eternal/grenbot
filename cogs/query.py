@@ -42,6 +42,8 @@ class QueryCog(commands.Cog):
         if ctx.author.name.lower() in self.blocked_users:
             await getattr(self, f"block_{ctx.author.name.lower()}")(ctx)
             return
+        if "everglow" in idol:
+            idol = "yena"
 
         num_pics = filter_input(num_pics, 1, 5)
         retry_flag = False
@@ -109,7 +111,7 @@ class QueryCog(commands.Cog):
                     reply = "".join(new_query[:-1])
                     break
 
-
+            
             await self.query_pics(ctx, f"{reply}-{idol}", num_pics)
             return
 

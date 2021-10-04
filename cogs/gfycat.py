@@ -78,7 +78,7 @@ class GfycatCog(commands.Cog):
     )
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def gfy_search(self, ctx, *idol, num_pics=1):
-        blocked = ["feet", "foot", "olivia", "olivi", "eunbig", "pit"]
+        blocked = ["soda", "feets", "feet", "foot", "olivia", "olivi", "eunbig", "pit"]
         try:
             num_pics = int(idol[-1])
             idol = idol[:-1]
@@ -97,7 +97,8 @@ class GfycatCog(commands.Cog):
                 idol = idol.replace(key, item)
         api_request = GfycatSearch(idol, num_pics)
         images = api_request.api_to_image()
-        await ctx.send("\n".join(images))
+        async with ctx.typing():
+            await ctx.send("\n".join(images))
 
 def setup(bot):
     bot.add_cog(GfycatCog(bot))
