@@ -53,7 +53,9 @@ class OwnerCog(commands.Cog):
     @commands.command(name="speak", hidden=True)
     @commands.is_owner()
     async def speak(self, ctx, *kwargs: str):
-        channel = self.bot.get_channel(174021609475014656)
+        off_topic = 176876742118473729
+        general = 174021609475014656
+        channel = self.bot.get_channel(general)
         phrase = " ".join(kwargs)
         await channel.send(phrase)
 

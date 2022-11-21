@@ -59,8 +59,8 @@ def generate_list(outlist, setnum, range_start, range_end):
 def main():
 
     output = []
-    generate_list(output, 1135, 1, 28)
-    generate_list(output, 13, 445, 451)
+    #generate_list(output, 1135, 1, 28)
+    generate_list(output, 13, 452, 455)
 
     with open("temp-cards.json", "w", encoding="utf-8") as writer:
         json.dump(output, writer, indent=4)

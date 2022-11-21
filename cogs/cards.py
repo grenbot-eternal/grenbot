@@ -3,6 +3,7 @@ import os
 import random
 import json
 import discord
+import aiohttp
 
 from pathlib import Path
 from urllib.parse import quote
@@ -18,7 +19,6 @@ HEADERS = [
     }
 ]
 
-
 class EWCDownloader:
     """docstring for EWCDownloader"""
 
@@ -28,21 +28,30 @@ class EWCDownloader:
         )
         self.outdir = outdir
 
-    def request_url(self):
+    async def request_url(self):
         """Parse EWC for latest card list. Returns json object."""
         headers = random.choice(HEADERS)
-        result = requests.get(self.json_url, headers=headers)
-        if result.status_code != 200:
-            raise ConnectionError(
-                f"could not download {self.url}\nerror code: {result.status_code}"
-            )
-        return result.json()
 
-    def json_to_disk(self):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.json_url, headers=headers) as r:
+                if r.status != 200:
+                    raise ConnectionError(
+                f"could not download {self.url}\nerror code: {result.status}"
+            )
+                result = await r.json()
+
+        # result = requests.get(self.json_url, headers=headers)
+        # if result.status_code != 200:
+        #     raise ConnectionError(
+        #         f"could not download {self.url}\nerror code: {result.status_code}"
+        #     )
+        return result
+
+    async def json_to_disk(self):
         outfile_name = "eternal-cards.json"
         if self.outdir is not None:
             outfile_name = os.path.join(self.outdir, outfile_name)
-        json_stream = self.request_url()
+        json_stream = await self.request_url()
         with open(outfile_name, "w", encoding="utf-8") as writer:
             json.dump(json_stream, writer, indent=4)
 
@@ -84,7 +93,7 @@ class EternalJsonParser:
     def get_card_by_set(self, set_num):
         return [item for item in self.data if set_num == item["SetNumber"]]
 
-    def add_new_set(self):
+    async def add_new_set(self):
         """Usage: mod level instead of admin."""
         pic_dir = Path(self.root_dir)
         existing_dirs = [x.name for x in pic_dir.iterdir() if x.is_dir()]
@@ -101,10 +110,10 @@ class EternalJsonParser:
 
         for set_num in missing_set_numbers:
             print(f"Fetching images for set {set_num}")
-            self.refresh_set_images(set_num)
+            await self.refresh_set_images(set_num)
         return f"Cards have been added for sets {successfull_sets}."
 
-    def refresh_set_images(self, set_num):
+    async def refresh_set_images(self, set_num):
         """Usage: mod level instead of admin."""
 
         set_num = int(set_num)
@@ -118,7 +127,7 @@ class EternalJsonParser:
 
         for card in self.get_card_by_set(set_num):
             image = EWCImage(card, self.root_dir)
-            image.download_image()
+            await image.download_image()
         return f"Images for {set_num} have been redownloaded."
 
 
@@ -139,19 +148,26 @@ class EWCImage:
     def __str__(self):
         return f"Card Image {self.imageurl} - {self.filename} - {self.setnum}"
 
-    def download_image(self):
+    async def download_image(self):
         headers = random.choice(HEADERS)
-        result = requests.get(self.imageurl, headers=headers)
+        # result = requests.get(self.imageurl, headers=headers)
 
-        if result.status_code != 200:
-            raise ConnectionError(
-                f"could not download {self.imageurl}\nerror code: {result.status_code}"
+        # if result.status_code != 200:
+        #     raise ConnectionError(
+        #         f"could not download {self.imageurl}\nerror code: {result.status_code}"
+        #     )
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.imageurl, headers=headers) as r:
+                if r.status != 200:
+                    raise ConnectionError(
+                f"could not download {self.url}\nerror code: {result.status}"
             )
-
+                result = await r.read()
         print("Downloading to {}".format(self.filepath))
 
         with open(self.filepath, "wb") as writer:
-            writer.write(result.content)
+            writer.write(result)
 
         return f"{self.filename} successfully downloaded."
 
@@ -166,7 +182,7 @@ class CardCog(commands.Cog):
             pic = discord.File(image.filepath)
         except FileNotFoundError:
             await ctx.send(f"Image not found. Redownloading {image.filename}")
-            image.download_image()
+            await image.download_image()
             pic = discord.File(image.filepath)
         await ctx.send(file=pic)
         return
@@ -224,7 +240,7 @@ class CardCog(commands.Cog):
             for result in results:
                 result = EWCImage(result, self.bot.image_dir)
                 if len(result.filename) == len(name):
-                    query_str = result.download_image()
+                    query_str = await result.download_image()
                     await ctx.send(query_str)
                     return
                 else:
@@ -237,7 +253,7 @@ class CardCog(commands.Cog):
             return
         else:
             result = EWCImage(results[0], self.bot.image_dir)
-            query_str = result.download_image()
+            query_str = await result.download_image()
             await ctx.send(query_str)
             return
 
@@ -253,7 +269,7 @@ class CardCog(commands.Cog):
         except:
             pass
         try:
-            result = reader.refresh_set_images(num)
+            result = await reader.refresh_set_images(num)
         except Exception as e:
             return
         await ctx.send(result)
@@ -270,7 +286,7 @@ class CardCog(commands.Cog):
                 return query_str
 
         reader = EternalJsonParser("eternal-cards.json", VAR)
-        result = reader.add_new_set()
+        result = await reader.add_new_set()
 
         await ctx.send(result)
         return
@@ -281,7 +297,7 @@ class CardCog(commands.Cog):
     @commands.check_any(commands.is_owner(), is_mod())
     async def renewJSON(self, ctx):
         eternal_cards = EWCDownloader()
-        eternal_cards.json_to_disk()
+        await eternal_cards.json_to_disk()
         if not Path("eternal-cards.json").is_file():
             await ctx.send(
                 "Updating eternal-cards.json failed. Some panic required."
