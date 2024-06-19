@@ -9,7 +9,7 @@ from pathlib import Path
 from urllib.parse import quote
 from discord.ext import commands
 
-from .utils import is_mod
+from .utils import is_mod, user_check
 
 HEADERS = [
     {
@@ -138,6 +138,7 @@ class EWCImage:
         self.item = item
         self.imageurl = self.item["ImageUrl"]
         self.setnum = self.item["SetNumber"]
+        self.setname = self.item["SetName"]
         self.filename = os.path.basename(self.imageurl[:-4]).replace("_", " ")
         self.filepath = f"{self.filename}.png"
         if outdir is not None:
@@ -190,8 +191,9 @@ class CardCog(commands.Cog):
     @commands.command(
         name="card", help=("Usage: !card cardname"),
     )
-    async def cardlookup(self, ctx, *name):
-        name = " ".join(name).lower()
+    async def cardlookup(self, ctx, *, name):
+        #name = " ".join(name).lower()
+        name = name.lower().replace("’", "'")
         try:
             reader = EternalJsonParser(
                 "eternal-cards.json", self.bot.image_dir
@@ -223,6 +225,48 @@ class CardCog(commands.Cog):
             )
         else:
             await self.send_cards(ctx, results[0])
+            return
+
+    @commands.command(
+        name="set", help=("Usage: !set cardname"),
+    )
+    async def setlookup(self, ctx, *name):
+        name = " ".join(name).lower()
+        try:
+            reader = EternalJsonParser(
+                "eternal-cards.json", self.bot.image_dir
+            )
+            results = reader.get_card_by_name(name)
+            if not results:
+                results = reader.get_card_by_name(name, ignore_comma=True)
+        except Exception as e:
+            pass
+
+        if len(results) < 1:
+            await ctx.send(f"I don't have any cards matching {name}")
+            return
+
+        elif len(results) > 1:
+            for result in results:
+                namecheck = EWCImage(result, self.bot.image_dir)
+                if len(namecheck.filename) == len(name):
+                    result_info = EWCImage(result[0])
+                    output = f"Set {result_info.setnum}: {result_info.setname}"
+                    await ctx.send(output)
+                    return
+            result_names = [
+                EWCImage(result, self.bot.image_dir).filename
+                for result in results
+            ]
+            expanded = '"' + '", "'.join(result_names) + '"'
+
+            await ctx.send(
+                f"{name} is too general please be more specific:\n{expanded}"
+            )
+        else:
+            result_info = EWCImage(results[0])
+            output = f"Set {result_info.setnum}: {result_info.setname}"
+            await ctx.send(output)
             return
 
     @commands.command(
@@ -285,7 +329,7 @@ class CardCog(commands.Cog):
             if "failed" in query_str:
                 return query_str
 
-        reader = EternalJsonParser("eternal-cards.json", VAR)
+        reader = EternalJsonParser("eternal-cards.json", self.bot.image_dir)
         result = await reader.add_new_set()
 
         await ctx.send(result)

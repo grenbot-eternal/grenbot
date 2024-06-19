@@ -2,18 +2,18 @@ name: grenbot
 channels:
   - defaults
 dependencies:
-  - ca-certificates=2022.07.19
-  - certifi=2022.6.15
-  - openssl=1.1.1q
-  - pip=21.0.1
-  - python=3.9.5
-  - setuptools=52.0.0
-  - sqlite=3.35.4
-  - tzdata=2022a
-  - vc=14.2
-  - vs2015_runtime=14.27.29016
-  - wheel=0.36.2
-  - wincertstore=0.2
+  - ca-certificates=2022.07.19=haa95532_0
+  - certifi=2022.6.15=py39haa95532_0
+  - openssl=1.1.1q=h2bbff1b_0
+  - pip=21.0.1=py39haa95532_0
+  - python=3.9.5=h6244533_3
+  - setuptools=52.0.0=py39haa95532_1
+  - sqlite=3.35.4=h2bbff1b_0
+  - tzdata=2022a=hda174b7_0
+  - vc=14.2=h21ff451_1
+  - vs2015_runtime=14.27.29016=h5e58377_2
+  - wheel=0.36.2=pyhd3eb1b0_0
+  - wincertstore=0.2=py39haa95532_2
   - pip:
     - aiohttp==3.7.4.post0
     - async-timeout==3.0.1
@@ -33,8 +33,10 @@ dependencies:
     - python-dotenv==0.15.0
     - pytz==2022.6
     - requests==2.23.0
+    - scipy==1.10.1
     - six==1.16.0
     - soupsieve==2.3.1
     - typing-extensions==3.10.0.0
     - urllib3==1.25.11
     - yarl==1.6.3
+prefix: C:\Users\will\Anaconda3\envs\grenbot

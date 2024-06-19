@@ -4,6 +4,13 @@ from discord.ext import commands
 
 # Collection of utility functions
 
+def user_check():
+    def predicate(ctx):
+        if message.author.name.lower() not in [""]:
+            return True 
+        return False
+    return commands.check(predicate)
+
 
 def in_channel(*channels):
     def predicate(ctx):

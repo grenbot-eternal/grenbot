@@ -3,7 +3,7 @@ import os
 import json
 
 from discord.ext import commands
-from .utils import is_mod
+from .utils import is_mod, user_check
 
 FILE = "statements.json"
 
@@ -13,11 +13,22 @@ class ResponseCog(commands.Cog):
         self.bot = bot
 
     @commands.command(
-        name="patch", help=("Usage: !patch"),
+        name="patch", 
+        aliases=["patchgulls",],
+        help=("Usage: !patch"),
     )
     async def patch(self, ctx):
         patchgulls = "https://cdn.discordapp.com/attachments/174021609475014656/446695427597664265/Patchgulls.png"
         await ctx.send(patchgulls)
+        return
+
+    @commands.command(
+        name="praise", 
+        help=("Usage: !praise"),
+    )
+    async def patch(self, ctx):
+        msg = ":bug:"
+        await ctx.send(msg)
         return
 
     @commands.command(name="dm_commands", help=("Usage: !dm_commands"))

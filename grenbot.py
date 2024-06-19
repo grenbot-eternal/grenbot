@@ -26,6 +26,7 @@ class GrenBot(commands.Bot):
             "cogs.owner",
             "cogs.responses",
             "cogs.ecq",
+            "cogs.stats",
         ]
         for ext in extensions:
             await self.load_extension(ext)

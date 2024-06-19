@@ -42,25 +42,30 @@ def bs4_to_deck(soup):
 def bs4_to_cardinfo(soup, setnum):
     imageurl = soup.find("meta", {"property": "og:image"})["content"]
     cardname = os.path.basename(imageurl[:-4]).replace("_", " ")
-    out_dict = {"SetNumber": setnum, "Name": cardname, "ImageUrl": imageurl}
+    out_dict = {"SetName": "", "SetNumber": setnum, "Name": cardname, "ImageUrl": imageurl}
     return out_dict
 
 
-def generate_list(outlist, setnum, range_start, range_end):
+def generate_list(setnum, range_start, range_end):
+    outlist = []
     url_stem = "https://eternalwarcry.com/cards/d/"
     for card_id in list(range(range_start, range_end)):
         url = f"{url_stem}/{setnum}-{card_id}/"
         soup = url_to_bs4(url)
         card = bs4_to_cardinfo(soup, setnum)
         if not card["Name"] == "og-image":
+            print(f"Adding {card['Name']}")
             outlist.append(card)
+    return outlist
 
 
 def main():
 
     output = []
     #generate_list(output, 1135, 1, 28)
-    generate_list(output, 13, 452, 455)
+    output += generate_list(15, 498, 515)
+    output += generate_list(15, 551, 600)
+    output += generate_list(1145, 0, 35)
 
     with open("temp-cards.json", "w", encoding="utf-8") as writer:
         json.dump(output, writer, indent=4)
